@@ -1,3 +1,4 @@
+
 article {
     background: linear-gradient(
       to right, 
@@ -7,6 +8,7 @@ article {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-align: center;
+    color: white;
   }
   
   h1 {
@@ -15,10 +17,7 @@ article {
   }
   
   body {
-    background: white;
-    
-    min-block-size: 100%;
-    min-inline-size: 100%;
+    background: rgb(0, 0, 0);
     box-sizing: border-box;
     display: grid;
     place-content: center;
@@ -26,18 +25,6 @@ article {
     font-size: min(200%, 5vmin);
   }
   
-  h1, p, body {
-    margin: 0;
-  }
-  
-  p {
-    font-family: "Dank Mono", ui-monospace, monospace;
-  }
-  
-  html {
-    block-size: 100%;
-    inline-size: 100%;
-  }
 
 .center {
     display: block;
@@ -49,7 +36,7 @@ article {
     padding: 5px;
   }
 
-#footersubend
+#header
   {
       text-align: center;
       font-size: min(100%, 2vmin);
@@ -64,7 +51,7 @@ article {
       padding: 1px;
   }
 
-#footerend
+#footer
   {
       text-align: center;
       font-size: min(100%, 1.5vmin);
@@ -75,5 +62,18 @@ article {
       width: 100%;
       background-color: rgb(157, 255, 0);
       color: rgb(0, 0, 0);
-      text-align: center;
+      
   }
+
+.typeText{
+    font-size: 2rem;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: .08em solid rgb(255, 255, 255);
+    width: 0;
+    animation: typing 1s steps(10, end) forwards;
+}
+@keyframes typing {
+    0% { width: 50% }
+    100% { width: 100% }
+}
