@@ -1,4 +1,4 @@
 # trodrigueza.github.io
 GitHub page
 
-Visit trodrigueza.github.io
+Visit [GitHub Page](trodrigueza.github.io "GitHub Page")
