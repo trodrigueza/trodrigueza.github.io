@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light dark;
+
+  --link: #1e90ff;
+  --resalt: #95c200;
+  --resalt2: #d00007;
+  --resalt3: #df7b00;
+}
+
+body {
+  background: #050505;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+html {
+  font-family: 'JetBrains Mono Variable', monospace;
+}

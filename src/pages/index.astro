@@ -1,16 +1,49 @@
 ---
-
+import Layout from "../layouts/Layout.astro";
+import LinkedInIcon from "../components/icons/LinkedIn.astro";
+import GitHubIcon from "../components/icons/GitHub.astro";
+import MailIcon from "../components/icons/Mail.astro";
+import CalendarIcon from "../components/icons/Calendar.astro";
+import Icon from "../components/Icon.astro";
+import Exp from "../components/Exp.astro";
+import SectionContainer from "../components/SectionContainer.astro";
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
-  </head>
-  <body>
-    <h1>My Site</h1>
-  </body>
-</html>
+<Layout title="trodrigueza">
+  <main class="px-30">
+    <SectionContainer class="flex flex-col items-center justify-center gap-y-12 py-30">
+      <img src="/me.jpg" alt="Tomas Rodríguez photo" class="w-24 h-24 rounded-full" />
+
+      <h1 class="text-3xl opacity-70">Hi! I'm Tomas, a computer science student at <a href="https://en.wikipedia.org/wiki/National_University_of_Colombia" target="_blank" class="font-bold text-[var(--link)] no_underline">Univesidad Nacional de Colombia</a>.</h1>
+      <h1 class="text-3xl opacity-70">I'm interested in learning about <a class="text-[var(--resalt)] font-bold">Machine Learning</a>, <a class="text-[var(--resalt)] font-bold">LLMs</a> and <a class="text-[var(--resalt)] font-bold">Quantitave/Algorithmic trading</a>.</h1>
+      <h1 class="text-3xl opacity-70">I love listening to <a class="text-[var(--resalt2)] font-bold">salsa</a>, practicing <a class="text-[var(--resalt2)] font-bold">cp</a> (competitive programming), going out for a <a class="text-[var(--resalt2)] font-bold">run</a> and visiting <a class="text-[var(--resalt2)] font-bold">new places</a>.</h1>
+      <h1 class="text-3xl opacity-70">In this site I intend to share <a class="text-[var(--resalt3)] font-bold">thoughts</a>, <a class="text-[var(--resalt3)] font-bold">experiences</a> and <a class="text-[var(--resalt3)] font-bold">projects</a>; and also I want to document my <a class="text-[var(--resalt3)] font-bold">learning journey</a>.</h1>
+      <h1 class="text-3xl opacity-70">Feel free to reach me through any of the links below :).</h1>
+      <nav class="flex gap-x-4">
+        <Icon href="https://www.github.com/trodrigueza/">
+          <GitHubIcon class="w-6 h-6"/>
+          GitHub
+        </Icon>
+
+        <Icon href="https://www.linkedin.com/in/tdrodrigueza/">
+          <LinkedInIcon class="w-6 h-6"/>
+          LinkedIn
+        </Icon>
+
+        <Icon href="mailto:trodrigueza@unal.edu.co">
+          <MailIcon class="w-6 h-6"/>
+          trodrigueza@unal.edu.co
+        </Icon>
+      </nav>
+    </SectionContainer>
+
+    
+    <!-- <SectionContainer>
+      <h2 class="text-2xl font-semibold mb-6 flex gap-x-2 items-center"> 
+        <CalendarIcon class="w-7 h-7 mr-2" />
+        Some Experiences
+      </h2>
+      <Exp />
+    </SectionContainer> -->
+  </main>
+</Layout>
