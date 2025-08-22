@@ -1,0 +1,56 @@
+---
+const modules = import.meta.glob('/src/pages/posts/*.mdx', { eager: true });
+const posts = Object.values(modules).map((m) => ({
+  frontmatter: m.frontmatter,     
+  Content: m.Content ?? m.default, 
+  url: m.url,                     
+  file: m.file,                  
+  headings: m.getHeadings?.(),    
+}));
+
+posts.sort((a, b) => new Date(b.frontmatter.date) - new Date(a.frontmatter.date));
+---
+
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {posts.map((project) => (
+    <a href={project.url} class="group block rounded-xl border border-white/10 bg-white/5 dark:bg-white/4 p-6 transition hover:bg-white/3">
+      <article class="h-full flex flex-col gap-3">
+        <h2 class="text-xl md:text-2xl font-bold">{project.frontmatter.title}</h2>
+        <time class="text-sm text-zinc-500 dark:text-zinc-400">
+          {new Date(project.frontmatter.pubDate).toDateString()}
+        </time>
+        <img
+          class="w-full object-cover rounded-md"
+          src={project.frontmatter.image.url}
+          alt={project.frontmatter.alt}
+        />
+
+        {project.frontmatter.description && (
+          <p class="text-sm text-zinc-300 line-clamp-3">{project.frontmatter.description}</p>
+        )}
+
+        <ul class="mt-2 flex flex-wrap gap-2">
+          {project.frontmatter.tags.map((tag) => (
+            <li>
+              <span class="px-2 py-0.5 rounded-full text-[11px] bg-[var(--resalt2)] text-white">
+                {tag}
+              </span>
+            </li>
+          ))}
+        </ul>
+        
+        {/* <div class="mt-auto flex items-center gap-2 pt-2">
+          <span class="rounded-full border border-white/10 px-3 py-1 text-xs bg-white/5 group-hover:bg-white/5 transition">Read</span>
+          {project.frontmatter.github && (
+            <span class="text-xs opacity-80">·</span>
+          )}
+          {project.frontmatter.github && (
+            <span class="rounded-full border border-white/10 px-3 py-1 text-xs bg-white/5 group-hover:bg-white/5 transition">
+              Repo
+            </span>
+          )}
+        </div> */}
+      </article>
+    </a>
+  ))}
+</section>
