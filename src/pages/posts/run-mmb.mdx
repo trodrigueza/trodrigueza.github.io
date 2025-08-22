@@ -1,7 +1,7 @@
 ---
 title: 'Running the Bogotá Half Marathon'
 image:
-    url: "/posts/trip-to-pasto/pasto.webp"
+    url: "/posts/run-mmb/bogota-half-marathon.webp"
     alt: "La Cocha, Pasto"
 pubDate: 2025-07-27
 tags: ["running", "experience"]
@@ -10,7 +10,7 @@ layout: "../../layouts/PostLayout.astro"
 <div style="justify-content: center; text-align: center;">
   <h1 class="post-title">{frontmatter.title}</h1>
   <p class="post-date">{new Date(frontmatter.pubDate).toDateString()}</p>
-  <img style="width: 300px; height 300px; border-radius: 5px;" src="/posts/trip-to-pasto/pasto.webp" alt="La Cocha, Pasto" />
+  <img style="width: 300px; height 300px; border-radius: 5px;" src={frontmatter.image.url} alt="La Cocha, Pasto" />
 </div>
 
 <article style="margin: 20px auto 0; max-width:720px; padding: 5px;">
