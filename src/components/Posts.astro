@@ -14,8 +14,8 @@ posts.sort((a, b) => new Date(b.frontmatter.pubDate) - new Date(a.frontmatter.pu
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
   {posts.map((project) => (
     <a href={project.url} class="group block rounded-xl border p-6 transition
-         border-zinc-200 bg-black/5 hover:bg-black/10
-         dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10
+         border-zinc-200 bg-black/3 hover:bg-black/5
+         dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/5
          text-inherit">
       <article class="h-full flex flex-col gap-3">
         <h2 class="text-xl md:text-2xl font-bold">{project.frontmatter.title}</h2>
