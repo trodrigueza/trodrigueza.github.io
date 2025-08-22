@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
 @import "katex/dist/katex.min.css";
 
 @media (prefers-color-scheme: dark) {
