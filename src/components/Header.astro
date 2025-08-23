@@ -1,6 +1,23 @@
-<header class="w-full flex justify-center items-center py-10 md:py-16 w-[1120px] mx-auto text-2xl">
-  <nav class="flex flex-row gap-x-10 opacity-90">
-    <a href="/">Home</a>
-    <a href="/blog/">Blog</a>
-</header>
+---
+const p = Astro.url.pathname;
+---
 
+<header
+  class="w-full flex justify-center items-center py-10 md:py-16 w-[1120px] mx-auto text-2xl"
+>
+  <nav class="flex flex-row gap-x-10 opacity-90">
+    <a
+      href="/"
+      aria-current={p === "/" ? "page" : undefined}
+      class="transition opacity-70 hover:opacity-100 aria-[current=page]:opacity-100 aria-[current=page]:font-semibold"
+      >Home</a
+    >
+
+    <a
+      href="/blog/"
+      aria-current={p.startsWith("/blog") ? "page" : undefined}
+      class="transition opacity-70 hover:opacity-100 aria-[current=page]:opacity-100 aria-[current=page]:font-semibold"
+      >Blog</a
+    >
+  </nav>
+</header>

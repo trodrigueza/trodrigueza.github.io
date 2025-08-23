@@ -1,48 +1,90 @@
 ---
-const modules = import.meta.glob('/src/pages/posts/*.mdx', { eager: true });
+const modules = import.meta.glob("/src/pages/posts/*.mdx", { eager: true });
 const posts = Object.values(modules).map((m) => ({
-  frontmatter: m.frontmatter,     
-  Content: m.Content ?? m.default, 
-  url: m.url,                     
-  file: m.file,                  
-  headings: m.getHeadings?.(),    
+  frontmatter: m.frontmatter,
+  Content: m.Content ?? m.default,
+  url: m.url,
+  file: m.file,
+  headings: m.getHeadings?.(),
 }));
 
-posts.sort((a, b) => new Date(b.frontmatter.pubDate) - new Date(a.frontmatter.pubDate));
+posts.sort(
+  (a, b) => new Date(b.frontmatter.pubDate) - new Date(a.frontmatter.pubDate),
+);
+
+const allTags = Array.from(
+  new Set(posts.flatMap((p) => p.frontmatter?.tags ?? [])),
+).sort((a, b) => a.localeCompare(b));
 ---
 
+<div id="tag-bar" class="mb-6 flex flex-wrap items-center gap-2">
+  <button
+    class="tag-btn hover:bg-black/3 hover:scale-[1.01]
+         dark:border-zinc-200/20 dark:bg-zinc-800/10 dark:text-zinc-100 dark:hover:bg-zinc-700/30
+         transition"
+    data-tag="all"
+    aria-pressed="true">All</button
+  >
+  {
+    allTags.map((tag) => (
+      <button
+        class="tag-btn hover:bg-black/3 hover:scale-[1.01]
+         dark:border-zinc-200/20 dark:bg-zinc-800/10 dark:text-zinc-100 dark:hover:bg-zinc-700/30
+         transition"
+        data-tag={tag}
+      >
+        {tag}
+      </button>
+    ))
+  }
+  <span id="tag-count" class="ml-2 text-sm opacity-70"></span>
+</div>
+
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-  {posts.map((project) => (
-    <a href={project.url} class="group block rounded-xl border p-6 transition
+  {
+    posts.map((project) => (
+      <a
+        data-tags={(project.frontmatter.tags ?? []).join("|")}
+        href={project.url}
+        class="group block rounded-xl border p-6 transition
          border-zinc-200 bg-black/3 hover:bg-black/5
          dark:border-white/10 dark:bg-white/3 dark:hover:bg-white/5
-         text-inherit">
-      <article class="h-full flex flex-col gap-3">
-        <h2 class="text-xl md:text-2xl font-bold">{project.frontmatter.title}</h2>
-        <time class="text-sm text-zinc-500 dark:text-zinc-400">
-          {new Date(project.frontmatter.pubDate).toDateString()}
-        </time>
-        <img
-          class="w-full object-cover rounded-md"
-          src={project.frontmatter.image.url}
-          alt={project.frontmatter.alt}
-        />
+         text-inherit"
+      >
+        <article class="h-full flex flex-col gap-3">
+          <h2 class="text-xl md:text-2xl font-bold">
+            {project.frontmatter.title}
+          </h2>
+          <time class="text-sm text-zinc-500 dark:text-zinc-400">
+            {new Date(project.frontmatter.pubDate).toDateString()}
+          </time>
+          <img
+            class="w-full object-cover rounded-md"
+            src={project.frontmatter.image.url}
+            alt={project.frontmatter.alt}
+          />
 
-        {project.frontmatter.description && (
-          <p class="text-sm text-zinc-300 line-clamp-3">{project.frontmatter.description}</p>
-        )}
+          {project.frontmatter.description && (
+            <p class="text-sm text-zinc-300 line-clamp-3">
+              {project.frontmatter.description}
+            </p>
+          )}
 
-        <ul class="mt-2 flex flex-wrap gap-2">
-          {project.frontmatter.tags.map((tag) => (
-            <li>
-              <span class="px-2 py-0.5 rounded-full text-[11px] bg-[var(--resalt2)] text-white">
-                {tag}
-              </span>
-            </li>
-          ))}
-        </ul>
-        
-        {/* <div class="mt-auto flex items-center gap-2 pt-2">
+          <ul class="mt-2 flex flex-wrap gap-2 text-[10px]">
+            {"["}
+            {project.frontmatter.tags.map((tag, idx, arr) => (
+              <li style="display: inline;">
+                {/* <span class="px-2 py-0.5 rounded-full text-[11px] bg-[var(--resalt2)] text-white"> */}
+                <span class="py-0.5 text-black/80 dark:text-white/80">
+                  {tag}
+                  {idx < arr.length - 1 ? "," : ""}
+                </span>
+              </li>
+            ))}
+            {"]"}
+          </ul>
+
+          {/* <div class="mt-auto flex items-center gap-2 pt-2">
           <span class="rounded-full border border-white/10 px-3 py-1 text-xs bg-white/5 group-hover:bg-white/5 transition">Read</span>
           {project.frontmatter.github && (
             <span class="text-xs opacity-80">·</span>
@@ -53,7 +95,70 @@ posts.sort((a, b) => new Date(b.frontmatter.pubDate) - new Date(a.frontmatter.pu
             </span>
           )}
         </div> */}
-      </article>
-    </a>
-  ))}
+        </article>
+      </a>
+    ))
+  }
 </section>
+
+<style>
+  .tag-btn {
+    border: 1px solid color-mix(in oklab, currentColor 20%, transparent);
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .tag-btn.is-active {
+    border-color: color-mix(in oklab, currentColor 45%, transparent);
+    font-weight: 600;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const btns = document.querySelectorAll(".tag-btn");
+    const cards = document.querySelectorAll("[data-tags]");
+    const count = document.getElementById("tag-count");
+
+    const params = new URLSearchParams(location.search);
+    let active = params.get("tag") || "all";
+
+    function apply() {
+      let shown = 0;
+      cards.forEach((card) => {
+        const tags = (card.dataset.tags || "").split("|").filter(Boolean);
+        const show = active === "all" || tags.includes(active);
+        card.toggleAttribute("hidden", !show);
+        if (show) shown++;
+      });
+
+      btns.forEach((b) => {
+        const on = b.dataset.tag === active;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+
+      const url = new URL(location);
+      if (active === "all") url.searchParams.delete("tag");
+      else url.searchParams.set("tag", active);
+      history.replaceState(null, "", url);
+
+      if (count) count.textContent = shown + " post" + (shown === 1 ? "" : "s");
+    }
+
+    btns.forEach((b) =>
+      b.addEventListener("click", () => {
+        active = b.dataset.tag;
+        apply();
+      }),
+    );
+
+    const tagsAvailable = new Set([
+      "all",
+      ...Array.from(btns).map((b) => b.dataset.tag),
+    ]);
+    if (!tagsAvailable.has(active)) active = "all";
+    apply();
+  })();
+</script>
