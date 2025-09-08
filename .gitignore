@@ -3,6 +3,12 @@ dist/
 # generated types
 .astro/
 
+# system
+.DS_Store
+
+# ide
+.vscode
+
 # dependencies
 node_modules/
 
