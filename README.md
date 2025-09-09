@@ -1,4 +1,4 @@
-# My Personal Astro Blog
+# My Personal Site 
 
 This was built over the Minimal Astro site with Tailwind v4 + MDX + KaTeX, deployed to GitHub Pages.
 
