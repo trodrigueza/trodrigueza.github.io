@@ -8,6 +8,7 @@ dist/
 
 # ide
 .vscode
+.kiro
 
 # dependencies
 node_modules/
