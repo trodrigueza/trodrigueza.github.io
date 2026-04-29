@@ -1,0 +1,43 @@
+---
+const { href, ...rest } = Astro.props;
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="blog-link"
+  {...rest}
+>
+  <slot />
+</a>
+
+<style>
+  .blog-link,
+  .blog-link:visited {
+    color: mediumseagreen;
+    text-decoration: none;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .blog-link,
+    .blog-link:visited {
+      color: tomato;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .blog-link,
+    .blog-link:visited {
+      color: greenyellow;
+    }
+  }
+
+  .blog-link:hover {
+    text-decoration: underline;
+  }
+  .blog-link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+</style>

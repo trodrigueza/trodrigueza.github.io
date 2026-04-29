@@ -1,0 +1,183 @@
+---
+title: 'Edo Solvers'
+image:
+    url: "/posts/edo-solvers/edo-solvers.webp"
+    alt: "Lorenz system"
+pubDate: 2025-09-15
+tags: ["math"]
+layout: "../../layouts/PostLayout.astro"
+---
+import C from '../../components/mdx/C.astro';
+import Link from '../../components/mdx/Link.astro';
+
+<div style="justify-content: center; text-align: center;">
+  <h1 class="post-title">{frontmatter.title}</h1>
+  <p class="post-date">{new Date(frontmatter.pubDate).toDateString()}</p>
+  <img style="width: 650px; height: 650px; border-radius: 5px;" src={frontmatter.image.url} alt={frontmatter.image.alt} />
+</div>
+
+<article style="margin: 20px auto 0; max-width:850px; padding: 5px; line-height: 2.3; font-size: 18px; ">
+
+*I wrote this a while ago. I'm publishing it now because I think it's a nice intro to ODE solvers. Also I want to have a small recap because I will be participating in the <a style="target: _blank; text-decoration: none; color: red" href="https://www.simiode.org/scudem">2025 SIMIODE SCUDEM</a>. -I also want to try the <a style="target: _blank; text-decoration: none; color: red" href="https://mdxjs.com">mdx</a> capabilities-.*
+
+I compare two classics: **<span style="color: blue">ode45 in MATLAB</span>** and **<span style="color: blue">Tsit5 in Julia</span>**. Both are explicit Runge–Kutta methods with adaptive step size and they shine on non-stiff problems (smooth dynamics, no crazy-fast components).
+
+**Example of a non-stiff system:** the van der Pol oscillator when μ is small.
+
+$$
+\begin{cases}
+\begin{align*}
+\frac{dx}{dt} &= y \\
+\frac{dy}{dt} &= μ(1 − x^2) y − x
+\end{align*}
+\end{cases}
+$$
+
+<div style="justify-content: center; text-align: center;">
+  <img style="width: 650px; height: 650px; border-radius: 5px;" src="/posts/edo-solvers/van-der-pol.webp" alt="Van der Pol trajectory (μ = 1)" />
+</div>
+
+
+## What these solvers actually do 
+
+At each time step they don’t just take one guess; they compute a small bundle of intermediate evaluations (the famous “k’s” in Runge–Kutta). From that bundle they produce **two answers of different orders** (e.g., order 5 and order 4). The **difference between them is an error estimate**. If the error looks big, they shrink the step; if it’s small, they grow it. That’s adaptive stepping.
+
+One more trick you’ll see later is **FSAL (First Same As Last)**: the last function evaluation from a successful step becomes the first evaluation for the next step. It saves one call to `f(t, y)` per step. Tiny detail, real speed in large runs.
+
+---
+
+## `ode45` (MATLAB)
+
+**TL;DR**: `ode45` uses the **Dormand–Prince 5(4)** pair (7 stages, order 5 with an embedded order-4 estimate). It’s the go-to default for many problems.
+
+Under the hood, it looks like this (conceptually):
+
+$$$
+\begin{align*}
+y_{n+1} &= y_n + h  Σ b_i  k_i\\
+k_i &= f(t_n + c_i h, y_n + h  Σ a_{ij} k_j)  \quad \text{(explicit RK)}
+\end{align*}
+$$$
+
+Dormand & Prince chose the coefficients to keep the **order-5 solution very accurate** while still getting a good **order-4 error estimate** for step control. `ode45` also uses FSAL, so although the tableau has 7 stages, **you pay 6 evaluations per accepted step**.
+
+<div style="justify-content: center; text-align: center;">
+  <img style="width: 650px; height: 450px; border-radius: 5px;" src="/posts/edo-solvers/dp-coef.webp" alt="DP(5,4) coefficients (Butcher-style tableau)" />
+</div>
+
+### Adaptive step rule
+
+MATLAB controls both **relative** and **absolute** error (`RelTol`, `AbsTol`). A simplified step update looks like:
+
+```matlab
+h_next = h * (tol / error)^(1/5)   // 1/5 because main method is order 5
+```
+
+In practice, MATLAB dampens that update (safety factors, min/max clamps) to avoid aggressive jumps:
+
+```matlab
+h_next ≈ max(h_min, h * max(0.1, 0.8 * (tol/error)^(1/5)))
+```
+
+If a step is rejected, it halves the step and retries.
+
+{/*<!-- INSERT IMAGE: screenshot/snippet of ode45 step-size controller. Suggested: /posts/edo-solvers/ode45-params.png -->*/}
+
+{/*<!-- INSERT IMAGE: code path where rejected steps halve h. Suggested: /posts/edo-solvers/ode45-reject.png -->*/}
+
+`ode45` also ships a **6th-order dense output** (interpolant), so you can query smooth values between steps—handy for event finding and pretty plots.
+
+### Minimal example: Lotka–Volterra in MATLAB
+
+```matlab
+function dydt = lotkavolterra(t,y,alpha,beta,delta,gamma)
+    dydt = [y(1)*(alpha - beta*y(2));
+            y(2)*(delta*y(1) - gamma)];
+end
+
+params = [0.5 0.3 0.2 0.1]; % alpha, beta, delta, gamma
+tspan = [0 20];
+y0 = [10; 5];
+options = odeset('RelTol',1e-6,'AbsTol',1e-9);
+
+[t,y] = ode45(@(t,y) lotkavolterra( ...
+    t,y,params(1),params(2),params(3),params(4)), ...
+    tspan, y0, options);
+```
+
+{/*<!-- INSERT IMAGE: time series for prey/predator from the run above. Suggested: /posts/edo-solvers/lotka-ode45.png -->*/}
+
+---
+
+## `Tsit5` (Julia, DifferentialEquations.jl)
+
+**TL;DR**: `Tsit5` is a **Tsitouras 5/4** pair (2011). It’s explicit RK with an embedded error estimate and FSAL, like DP(5,4), but tuned coefficients make it **a bit more efficient on many problems**. That’s why it’s a popular default in Julia.
+
+{/*<!-- INSERT IMAGE: Tsitouras 2011 paper cover. Suggested: /posts/edo-solvers/tsit-paper.png --> */}
+
+Two notes I like:
+
+* The method relaxes some classic tableau constraints, giving more freedom to **minimize truncation error** for the 5th-order solution.
+* It includes a **4th-order dense output** for smooth interpolation inside each step.
+
+A common (simplified) step update you’ll see documented is:
+
+```text
+h_next = 0.9 * (tol / error)^(1/5)
+```
+
+Same spirit as `ode45`: safety factor + order-based exponent.
+
+### Minimal example: Lorenz in Julia
+
+```julia
+using DifferentialEquations, Plots
+
+function lorenz!(du,u,p,t)
+    σ,ρ,β = p
+    du[1] = σ*(u[2]-u[1])
+    du[2] = u[1]*(ρ-u[3]) - u[2]
+    du[3] = u[1]*u[2] - β*u[3]
+end
+
+u0    = [1.0, 0.0, 0.0]
+p     = (10.0, 28.0, 8/3)
+tspan = (0.0, 100.0)
+
+prob = ODEProblem(lorenz!, u0, tspan, p)
+sol  = solve(prob, Tsit5(); reltol=1e-8, abstol=1e-8)
+```
+
+{/*<!-- INSERT IMAGE: classic Lorenz attractor from the solution above. Suggested: /posts/edo-solvers/lorenz-tsit5.png -->*/}
+
+---
+
+## Quick comparison (my take)
+
+* **Both**: explicit RK, adaptive step, embedded error estimate, FSAL, dense output. Great for **non-stiff** ODEs.
+* **`ode45`**: excellent default in MATLAB, very nice **6th-order interpolation**.
+* **`Tsit5`**: often **\~10% faster** on standard test sets thanks to coefficient tuning (your mileage may vary).
+
+If I’m in MATLAB, I start with `ode45`. If I’m in Julia, `Tsit5` is the first thing I try.
+
+---
+
+## A small nerd note
+
+While doing this I noticed the **Spanish Wikipedia** page for Dormand–Prince had the last two rows of the tableau swapped (I submitted a fix). A subtle source of confusion is notation: in the original DP paper the “hat” weights are the **order-5** ones and the plain `b` are **order-4**; some later references flip that naming.
+
+{/*<!-- INSERT IMAGE: screenshot highlighting the swapped rows in the old Wikipedia version. Suggested: /posts/edo-solvers/wiki-butcher-fix.png -->*/}
+
+---
+
+## References
+
+1. [https://www.mathworks.com/help/matlab/ordinary-differential-equations.html](https://www.mathworks.com/help/matlab/ordinary-differential-equations.html)
+2. [https://nextjournal.com/sosiris-de/ode-diffeq](https://nextjournal.com/sosiris-de/ode-diffeq)
+3. [https://www.mathworks.com/help/matlab/ref/ode45.html](https://www.mathworks.com/help/matlab/ref/ode45.html)
+4. [https://blogs.mathworks.com/cleve/2014/05/26/ordinary-differential-equation-solvers-ode23-and-ode45/](https://blogs.mathworks.com/cleve/2014/05/26/ordinary-differential-equation-solvers-ode23-and-ode45/)
+5. Dormand & Prince (1980): [https://www.sciencedirect.com/science/article/pii/0771050X80900133](https://www.sciencedirect.com/science/article/pii/0771050X80900133)
+6. Tsitouras (2011): [https://www.sciencedirect.com/science/article/pii/S0898122111004706](https://www.sciencedirect.com/science/article/pii/S0898122111004706)
+7. Julia’s DifferentialEquations docs: [https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode\_solve/](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/)
+
+</article>

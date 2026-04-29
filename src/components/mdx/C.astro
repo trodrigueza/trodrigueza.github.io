@@ -1,0 +1,38 @@
+---
+// src/components/mdx/C.astro
+const { variant = "blue", class: cls = "" } = Astro.props;
+const map = { blue: "c-blue", red: "c-red", green: "c-green", gray: "c-gray" };
+const colorClass = map[variant] ?? variant; // still allows passing a custom class name
+---
+
+<span class={`${colorClass} ${cls}`.trim()}><slot /></span>
+
+<style>
+  .c-blue {
+    color: #2563eb;
+  }
+  .c-red {
+    color: #dc2626;
+  }
+  .c-green {
+    color: #16a34a;
+  }
+  .c-gray {
+    color: #6b7280;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .c-blue {
+      color: cyan;
+    }
+    .c-red {
+      color: orangered;
+    }
+    .c-green {
+      color: springgreen;
+    }
+    .c-gray {
+      color: darkgray;
+    }
+  }
+</style>
