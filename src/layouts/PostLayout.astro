@@ -45,6 +45,22 @@ import "katex/dist/katex.min.css";
         --tw-prose-pre-bg: #0b0b0b;
         --tw-prose-hr: #27272a;
       }
+
+      /* Dark theme code block styling */
+      .prose pre {
+        background-color: var(--tw-prose-pre-bg);
+        color: var(--tw-prose-code);
+      }
+
+      .prose pre code {
+        color: var(--tw-prose-code);
+        background-color: transparent;
+      }
+
+      .prose :not(pre) > code {
+        background-color: var(--tw-prose-pre-bg);
+        color: var(--tw-prose-code);
+      }
     }
     @media (prefers-color-scheme: light) {
       html,
@@ -56,9 +72,25 @@ import "katex/dist/katex.min.css";
         --tw-prose-body: #0a0a0a;
         --tw-prose-headings: #111;
         --tw-prose-links: var(--link);
-        --tw-prose-code: #111;
+        --tw-prose-code: #0a0a0a;
         --tw-prose-pre-bg: #f6f6f7;
         --tw-prose-hr: #e5e7eb;
+      }
+
+      /* Light theme code block styling */
+      .prose pre {
+        background-color: var(--tw-prose-pre-bg);
+        color: var(--tw-prose-code);
+      }
+
+      .prose pre code {
+        color: var(--tw-prose-code);
+        background-color: transparent;
+      }
+
+      .prose :not(pre) > code {
+        background-color: var(--tw-prose-pre-bg);
+        color: var(--tw-prose-code);
       }
     }
 
@@ -77,6 +109,31 @@ import "katex/dist/katex.min.css";
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+    }
+
+    /* Code block styling - fallback for browsers without prefers-color-scheme support */
+    .prose pre {
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    /* Inline code styling */
+    .prose :not(pre) > code {
+      border-radius: 12px;
+      padding: 0.25rem 0.375rem;
+    }
+
+    /* Code content within blocks - ensure proper inheritance */
+    .prose pre code {
+      border-radius: 0;
+      padding: 0;
+    }
+
+    /* Responsive padding for mobile devices */
+    @media (max-width: 640px) {
+      .prose pre {
+        padding: 1rem;
+      }
     }
   </style>
 

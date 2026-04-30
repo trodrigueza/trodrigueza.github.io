@@ -81,10 +81,6 @@ h_next ≈ max(h_min, h * max(0.1, 0.8 * (tol/error)^(1/5)))
 
 If a step is rejected, it halves the step and retries.
 
-{/*<!-- INSERT IMAGE: screenshot/snippet of ode45 step-size controller. Suggested: /posts/edo-solvers/ode45-params.png -->*/}
-
-{/*<!-- INSERT IMAGE: code path where rejected steps halve h. Suggested: /posts/edo-solvers/ode45-reject.png -->*/}
-
 `ode45` also ships a **6th-order dense output** (interpolant), so you can query smooth values between steps—handy for event finding and pretty plots.
 
 ### Minimal example: Lotka–Volterra in MATLAB
@@ -105,15 +101,11 @@ options = odeset('RelTol',1e-6,'AbsTol',1e-9);
     tspan, y0, options);
 ```
 
-{/*<!-- INSERT IMAGE: time series for prey/predator from the run above. Suggested: /posts/edo-solvers/lotka-ode45.png -->*/}
-
 ---
 
 ## `Tsit5` (Julia, DifferentialEquations.jl)
 
 **TL;DR**: `Tsit5` is a **Tsitouras 5/4** pair (2011). It’s explicit RK with an embedded error estimate and FSAL, like DP(5,4), but tuned coefficients make it **a bit more efficient on many problems**. That’s why it’s a popular default in Julia.
-
-{/*<!-- INSERT IMAGE: Tsitouras 2011 paper cover. Suggested: /posts/edo-solvers/tsit-paper.png --> */}
 
 Two notes I like:
 
@@ -148,11 +140,9 @@ prob = ODEProblem(lorenz!, u0, tspan, p)
 sol  = solve(prob, Tsit5(); reltol=1e-8, abstol=1e-8)
 ```
 
-{/*<!-- INSERT IMAGE: classic Lorenz attractor from the solution above. Suggested: /posts/edo-solvers/lorenz-tsit5.png -->*/}
-
 ---
 
-## Quick comparison (my take)
+## Quick comparison
 
 * **Both**: explicit RK, adaptive step, embedded error estimate, FSAL, dense output. Great for **non-stiff** ODEs.
 * **`ode45`**: excellent default in MATLAB, very nice **6th-order interpolation**.
@@ -162,11 +152,9 @@ If I’m in MATLAB, I start with `ode45`. If I’m in Julia, `Tsit5` is the firs
 
 ---
 
-## A small nerd note
+## A small note
 
 While doing this I noticed the **Spanish Wikipedia** page for Dormand–Prince had the last two rows of the tableau swapped (I submitted a fix). A subtle source of confusion is notation: in the original DP paper the “hat” weights are the **order-5** ones and the plain `b` are **order-4**; some later references flip that naming.
-
-{/*<!-- INSERT IMAGE: screenshot highlighting the swapped rows in the old Wikipedia version. Suggested: /posts/edo-solvers/wiki-butcher-fix.png -->*/}
 
 ---
 
