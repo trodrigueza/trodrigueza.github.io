@@ -1,6 +1,7 @@
 ---
 const { title } = Astro.props;
 import PostHeader from "../components/PostHeader.astro";
+import '@fontsource-variable/jetbrains-mono';
 import "katex/dist/katex.min.css";
 ---
 
@@ -8,6 +9,47 @@ import "katex/dist/katex.min.css";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Theme initialization script - MUST be first to prevent FOIT -->
+    <script is:inline>
+      // Blocking script to prevent flash of incorrect theme (FOIT)
+      (function() {
+        // Get stored theme from localStorage with error handling
+        function getStoredTheme() {
+          try {
+            return localStorage.getItem('theme');
+          } catch (e) {
+            console.warn('localStorage unavailable, using system preference');
+            return null;
+          }
+        }
+        
+        // Get system theme preference
+        function getSystemTheme() {
+          if (window.matchMedia) {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          // Fallback to light theme for older browsers
+          return 'light';
+        }
+        
+        // Validate theme value
+        function getValidTheme(value) {
+          if (value === 'light' || value === 'dark') {
+            return value;
+          }
+          return null;
+        }
+        
+        const storedTheme = getStoredTheme();
+        const validStoredTheme = getValidTheme(storedTheme);
+        const systemTheme = getSystemTheme();
+        const theme = validStoredTheme || systemTheme;
+        
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    
     <meta name="color-scheme" content="dark light" />
     <meta
       name="theme-color"
@@ -22,15 +64,79 @@ import "katex/dist/katex.min.css";
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
-  <main class="mx-auto w-full max-w-3xl px-4 py-10">
-    <PostHeader />
-    <article class="prose prose-zinc max-w-none dark:prose-invert">
-      <!-- <h1 class="!mb-4">{title}</h1> -->
-      <slot />
-    </article>
-  </main>
+  <body>
+    <main class="mx-auto w-full max-w-3xl px-4 py-10">
+      <PostHeader />
+      <article class="prose prose-zinc max-w-none dark:prose-invert">
+        <!-- <h1 class="!mb-4">{title}</h1> -->
+        <slot />
+      </article>
+    </main>
+  </body>
 
   <style is:global>
+    /* Attribute-based theme selectors - override media queries for manual theme control */
+    html[data-theme="dark"],
+    html[data-theme="dark"] body {
+      background: #050505;
+      color: #e5e7eb;
+    }
+
+    html[data-theme="dark"] .prose {
+      --tw-prose-body: #e5e7eb;
+      --tw-prose-headings: #fff;
+      --tw-prose-links: var(--link);
+      --tw-prose-code: #e5e7eb;
+      --tw-prose-pre-bg: #0b0b0b;
+      --tw-prose-hr: #27272a;
+    }
+
+    html[data-theme="dark"] .prose pre {
+      background-color: var(--tw-prose-pre-bg);
+      color: var(--tw-prose-code);
+    }
+
+    html[data-theme="dark"] .prose pre code {
+      color: var(--tw-prose-code);
+      background-color: transparent;
+    }
+
+    html[data-theme="dark"] .prose :not(pre) > code {
+      background-color: var(--tw-prose-pre-bg);
+      color: var(--tw-prose-code);
+    }
+
+    html[data-theme="light"],
+    html[data-theme="light"] body {
+      background: #ffffff;
+      color: #0a0a0a;
+    }
+
+    html[data-theme="light"] .prose {
+      --tw-prose-body: #0a0a0a;
+      --tw-prose-headings: #111;
+      --tw-prose-links: var(--link);
+      --tw-prose-code: #0a0a0a;
+      --tw-prose-pre-bg: #f6f6f7;
+      --tw-prose-hr: #e5e7eb;
+    }
+
+    html[data-theme="light"] .prose pre {
+      background-color: var(--tw-prose-pre-bg);
+      color: var(--tw-prose-code);
+    }
+
+    html[data-theme="light"] .prose pre code {
+      color: var(--tw-prose-code);
+      background-color: transparent;
+    }
+
+    html[data-theme="light"] .prose :not(pre) > code {
+      background-color: var(--tw-prose-pre-bg);
+      color: var(--tw-prose-code);
+    }
+
+    /* Media query fallback for when no manual theme is set */
     @media (prefers-color-scheme: dark) {
       html,
       body {

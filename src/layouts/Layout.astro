@@ -14,6 +14,47 @@ import Header from "../components/Header.astro";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Theme initialization script - MUST be first to prevent FOIT -->
+    <script is:inline>
+      // Blocking script to prevent flash of incorrect theme (FOIT)
+      (function() {
+        // Get stored theme from localStorage with error handling
+        function getStoredTheme() {
+          try {
+            return localStorage.getItem('theme');
+          } catch (e) {
+            console.warn('localStorage unavailable, using system preference');
+            return null;
+          }
+        }
+        
+        // Get system theme preference
+        function getSystemTheme() {
+          if (window.matchMedia) {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          // Fallback to light theme for older browsers
+          return 'light';
+        }
+        
+        // Validate theme value
+        function getValidTheme(value) {
+          if (value === 'light' || value === 'dark') {
+            return value;
+          }
+          return null;
+        }
+        
+        const storedTheme = getStoredTheme();
+        const validStoredTheme = getValidTheme(storedTheme);
+        const systemTheme = getSystemTheme();
+        const theme = validStoredTheme || systemTheme;
+        
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    
     <meta name="color-scheme" content="dark light">
     <meta name="theme-color" content="#050505" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">

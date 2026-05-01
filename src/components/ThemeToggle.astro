@@ -1,0 +1,215 @@
+---
+import Sun from './icons/Sun.astro';
+import Moon from './icons/Moon.astro';
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  aria-label="Switch to dark theme"
+  class="theme-toggle-button"
+>
+  <span class="theme-icon" aria-hidden="true">
+    <Moon class="moon-icon" />
+    <Sun class="sun-icon" />
+  </span>
+</button>
+
+<!-- Visually hidden aria-live region for screen reader announcements -->
+<div
+  id="theme-announcement"
+  aria-live="polite"
+  aria-atomic="true"
+  class="sr-only"
+></div>
+
+<script>
+  // Theme toggle client-side logic
+  function initThemeToggle() {
+    const button = document.getElementById('theme-toggle') as HTMLButtonElement | null;
+    if (!button) return;
+
+    // Get current theme from HTML element
+    function getCurrentTheme(): 'light' | 'dark' {
+      const theme = document.documentElement.getAttribute('data-theme');
+      return theme === 'dark' ? 'dark' : 'light';
+    }
+
+    // Set theme in localStorage with error handling
+    function setStoredTheme(theme: 'light' | 'dark'): void {
+      try {
+        localStorage.setItem('theme', theme);
+      } catch (e) {
+        console.warn('Failed to persist theme preference');
+        // Continue with theme change even if storage fails
+      }
+    }
+
+    // Update button icon and aria-label based on current theme
+    function updateButton(buttonElement: HTMLButtonElement, theme: 'light' | 'dark'): void {
+      // Update aria-label to describe the action that will occur on click
+      if (theme === 'light') {
+        buttonElement.setAttribute('aria-label', 'Switch to dark theme');
+      } else {
+        buttonElement.setAttribute('aria-label', 'Switch to light theme');
+      }
+    }
+
+    // Announce theme change to screen readers
+    function announceThemeChange(theme: 'light' | 'dark'): void {
+      const announcement = document.getElementById('theme-announcement');
+      if (announcement) {
+        // Clear previous announcement
+        announcement.textContent = '';
+        
+        // Use setTimeout to ensure screen readers detect the change
+        setTimeout(() => {
+          announcement.textContent = theme === 'dark' 
+            ? 'Dark theme activated' 
+            : 'Light theme activated';
+        }, 100);
+      }
+    }
+
+    // Toggle theme between light and dark
+    function toggleTheme(): void {
+      const currentTheme = getCurrentTheme();
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      // Update data-theme attribute on <html> element
+      document.documentElement.setAttribute('data-theme', newTheme);
+      
+      // Persist theme choice to localStorage
+      setStoredTheme(newTheme);
+      
+      // Update button icon and aria-label
+      if (button) {
+        updateButton(button, newTheme);
+      }
+      
+      // Announce theme change to screen readers
+      announceThemeChange(newTheme);
+    }
+
+    // Initialize button state on page load
+    const initialTheme = getCurrentTheme();
+    if (button) {
+      updateButton(button, initialTheme);
+    }
+
+    // Handle click events
+    button.addEventListener('click', toggleTheme);
+
+    // Handle keyboard events (Enter and Space keys)
+    button.addEventListener('keydown', (event: KeyboardEvent) => {
+      // Enter key (key code 13) or Space key (key code 32)
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault(); // Prevent default space scrolling
+        toggleTheme();
+      }
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThemeToggle);
+  } else {
+    initThemeToggle();
+  }
+</script>
+
+<style>
+  .theme-toggle-button {
+    /* Minimum 44x44px touch target for accessibility */
+    min-width: 44px;
+    min-height: 44px;
+    
+    /* Button styling */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 0.375rem;
+    
+    /* Ensure proper color inheritance */
+    color: inherit;
+    
+    /* Transition for smooth interactions */
+    transition: opacity 0.2s ease;
+    opacity: 0.7;
+  }
+  
+  .theme-toggle-button:hover {
+    opacity: 1;
+  }
+  
+  /* Visible focus indicator - 2px outline */
+  .theme-toggle-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    opacity: 1;
+  }
+  
+  .theme-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    position: relative;
+  }
+  
+  /* Icon visibility based on theme */
+  .moon-icon,
+  .sun-icon {
+    position: absolute;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  
+  /* Default: show moon (light theme active) */
+  .moon-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .sun-icon {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  
+  /* When dark theme is active, show sun */
+  :global(html[data-theme="dark"]) .moon-icon {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  
+  :global(html[data-theme="dark"]) .sun-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  /* Screen reader only class - visually hidden but accessible to screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .theme-toggle-button,
+    .moon-icon,
+    .sun-icon {
+      transition: none;
+    }
+  }
+</style>

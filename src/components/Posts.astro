@@ -75,7 +75,7 @@ const allTags = Array.from(
             {project.frontmatter.tags.map((tag, idx, arr) => (
               <li style="display: inline;">
                 {/* <span class="px-2 py-0.5 rounded-full text-[11px] bg-[var(--resalt2)] text-white"> */}
-                <span class="py-0.5 text-black/80 dark:text-white/80">
+                <span class="py-0.5">
                   {tag}
                   {idx < arr.length - 1 ? "," : ""}
                 </span>

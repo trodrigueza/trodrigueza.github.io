@@ -1,6 +1,72 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
 
+/* Attribute-based theme selectors - override media queries for manual theme control */
+/* These selectors have higher specificity than media queries, allowing manual theme to override system preference */
+
+/* Dark theme styles */
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+  background: #050505;
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .prose {
+  --tw-prose-body: #e5e7eb;
+  --tw-prose-headings: #fff;
+  --tw-prose-links: var(--link);
+  --tw-prose-code: #e5e7eb;
+  --tw-prose-pre-bg: #0b0b0b;
+  --tw-prose-hr: #27272a;
+}
+
+html[data-theme="dark"] .prose pre {
+  background-color: var(--tw-prose-pre-bg);
+  color: var(--tw-prose-code);
+}
+
+html[data-theme="dark"] .prose pre code {
+  color: var(--tw-prose-code);
+  background-color: transparent;
+}
+
+html[data-theme="dark"] .prose :not(pre) > code {
+  background-color: var(--tw-prose-pre-bg);
+  color: var(--tw-prose-code);
+}
+
+/* Light theme styles */
+html[data-theme="light"],
+html[data-theme="light"] body {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+
+html[data-theme="light"] .prose {
+  --tw-prose-body: #0a0a0a;
+  --tw-prose-headings: #111;
+  --tw-prose-links: var(--link);
+  --tw-prose-code: #0a0a0a;
+  --tw-prose-pre-bg: #f6f6f7;
+  --tw-prose-hr: #e5e7eb;
+}
+
+html[data-theme="light"] .prose pre {
+  background-color: var(--tw-prose-pre-bg);
+  color: var(--tw-prose-code);
+}
+
+html[data-theme="light"] .prose pre code {
+  color: var(--tw-prose-code);
+  background-color: transparent;
+}
+
+html[data-theme="light"] .prose :not(pre) > code {
+  background-color: var(--tw-prose-pre-bg);
+  color: var(--tw-prose-code);
+}
+
+/* Media query fallback for when no manual theme is set */
 @media (prefers-color-scheme: dark) {
 
   html,
