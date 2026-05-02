@@ -10,13 +10,12 @@ layout: "../../layouts/PostLayout.astro"
 import C from '../../components/mdx/C.astro';
 import Link from '../../components/mdx/Link.astro';
 
+<article style="margin: 20px auto 0; max-width:850px; padding: 5px; line-height: 2.3; font-size: 18px; ">
 <div style="justify-content: center; text-align: center;">
   <h1 class="post-title">{frontmatter.title}</h1>
   <p class="post-date">{new Date(frontmatter.pubDate).toDateString()}</p>
   <img style="width: 100%; height: auto; border-radius: 5px;" src={frontmatter.image.url} alt={frontmatter.image.alt} />
 </div>
-
-<article style="margin: 20px auto 0; max-width:850px; padding: 5px; line-height: 2.3; font-size: 18px; ">
 
 *I wrote this a while ago. I'm publishing it now because I think it's a nice intro to ODE solvers. Also I want to have a small recap because I will be participating in the <a style="target: _blank; text-decoration: none; color: red" href="https://www.simiode.org/scudem">2025 SIMIODE SCUDEM</a>. -I also want to try the <a style="target: _blank; text-decoration: none; color: red" href="https://mdxjs.com">mdx</a> capabilities-.*
 
@@ -160,12 +159,11 @@ While doing this I noticed the **Spanish Wikipedia** page for Dormand–Prince h
 
 ## References
 
-1. [https://www.mathworks.com/help/matlab/ordinary-differential-equations.html](https://www.mathworks.com/help/matlab/ordinary-differential-equations.html)
-2. [https://nextjournal.com/sosiris-de/ode-diffeq](https://nextjournal.com/sosiris-de/ode-diffeq)
-3. [https://www.mathworks.com/help/matlab/ref/ode45.html](https://www.mathworks.com/help/matlab/ref/ode45.html)
-4. [https://blogs.mathworks.com/cleve/2014/05/26/ordinary-differential-equation-solvers-ode23-and-ode45/](https://blogs.mathworks.com/cleve/2014/05/26/ordinary-differential-equation-solvers-ode23-and-ode45/)
-5. Dormand & Prince (1980): [https://www.sciencedirect.com/science/article/pii/0771050X80900133](https://www.sciencedirect.com/science/article/pii/0771050X80900133)
-6. Tsitouras (2011): [https://www.sciencedirect.com/science/article/pii/S0898122111004706](https://www.sciencedirect.com/science/article/pii/S0898122111004706)
-7. Julia’s DifferentialEquations docs: [https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode\_solve/](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/)
-
+1. <Link href="https://www.mathworks.com/help/matlab/ordinary-differential-equations.html">MATLAB ODE documentation</Link>
+2. <Link href="https://nextjournal.com/sosiris-de/ode-diffeq">ODE & DiffEq (Nextjournal)</Link>
+3. <Link href="https://www.mathworks.com/help/matlab/ref/ode45.html">ode45 reference</Link>
+4. <Link href="https://blogs.mathworks.com/cleve/2014/05/26/ordinary-differential-equation-solvers-ode23-and-ode45/">ODE solvers ode23 and ode45 (Cleve's Corner)</Link>
+5. <Link href="https://www.sciencedirect.com/science/article/pii/0771050X80900133">Dormand & Prince (1980)</Link>
+6. <Link href="https://www.sciencedirect.com/science/article/pii/S0898122111004706">Tsitouras (2011)</Link>
+7. <Link href="https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/">Julia DifferentialEquations docs</Link>
 </article>
