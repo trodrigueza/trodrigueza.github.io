@@ -13,7 +13,7 @@ import Link from '../../components/mdx/Link.astro';
 <div style="justify-content: center; text-align: center;">
   <h1 class="post-title">{frontmatter.title}</h1>
   <p class="post-date">{new Date(frontmatter.pubDate).toDateString()}</p>
-  <img style="width: 650px; height: 650px; border-radius: 5px;" src={frontmatter.image.url} alt={frontmatter.image.alt} />
+  <img style="width: 100%; height: auto; border-radius: 5px;" src={frontmatter.image.url} alt={frontmatter.image.alt} />
 </div>
 
 <article style="margin: 20px auto 0; max-width:850px; padding: 5px; line-height: 2.3; font-size: 18px; ">
@@ -34,7 +34,7 @@ $$
 $$
 
 <div style="justify-content: center; text-align: center;">
-  <img style="width: 650px; height: 650px; border-radius: 5px;" src="/posts/edo-solvers/van-der-pol.webp" alt="Van der Pol trajectory (μ = 1)" />
+  <img style="width: 100%; height: auto; border-radius: 5px;" src="/posts/edo-solvers/van-der-pol.webp" alt="Van der Pol trajectory (μ = 1)" />
 </div>
 
 
@@ -62,7 +62,7 @@ $$$
 Dormand & Prince chose the coefficients to keep the **order-5 solution very accurate** while still getting a good **order-4 error estimate** for step control. `ode45` also uses FSAL, so although the tableau has 7 stages, **you pay 6 evaluations per accepted step**.
 
 <div style="justify-content: center; text-align: center;">
-  <img style="width: 650px; height: 450px; border-radius: 5px;" src="/posts/edo-solvers/dp-coef.webp" alt="DP(5,4) coefficients (Butcher-style tableau)" />
+  <img style="width: 100%; height: auto; border-radius: 5px;" src="/posts/edo-solvers/dp-coef.webp" alt="DP(5,4) coefficients (Butcher-style tableau)" />
 </div>
 
 ### Adaptive step rule
