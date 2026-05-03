@@ -1,10 +1,8 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
 
-/* Attribute-based theme selectors - override media queries for manual theme control */
-/* These selectors have higher specificity than media queries, allowing manual theme to override system preference */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-/* Dark theme styles */
 html[data-theme="dark"],
 html[data-theme="dark"] body {
   background: #050505;

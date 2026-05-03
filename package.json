@@ -6,7 +6,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.4",
@@ -16,6 +19,7 @@
     "tailwindcss": "^4.1.12"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "katex": "^0.16.22",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0"
