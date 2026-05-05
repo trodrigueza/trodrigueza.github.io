@@ -72,9 +72,328 @@ import "katex/dist/katex.min.css";
         <slot />
       </article>
     </main>
+    
+    <!-- Visually hidden aria-live region for screen reader announcements -->
+    <div class="sr-only copy-announcement" aria-live="polite" aria-atomic="true"></div>
+    
+    <!-- Copy button functionality -->
+    <script>
+      // Module-level timer variable
+      let resetTimer: number | null = null;
+
+      // Check if clipboard support is available
+      function hasClipboardSupport(): boolean {
+        return !!(
+          (navigator.clipboard && navigator.clipboard.writeText) ||
+          document.queryCommandSupported?.('copy')
+        );
+      }
+
+      // Extract plain text from pre element
+      function extractCodeText(preElement: HTMLPreElement): string {
+        return preElement.textContent || '';
+      }
+
+      // Copy text to clipboard with fallback
+      async function copyToClipboard(text: string): Promise<{
+        success: boolean;
+        method: 'clipboard-api' | 'execCommand' | 'none';
+        error?: Error;
+      }> {
+        // Try Clipboard API first (modern browsers)
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          try {
+            await navigator.clipboard.writeText(text);
+            return { success: true, method: 'clipboard-api' };
+          } catch (error) {
+            console.warn('Clipboard API failed, trying fallback', error);
+            // Fall through to execCommand fallback
+          }
+        }
+
+        // Fallback to execCommand (older browsers)
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          const success = document.execCommand('copy');
+          document.body.removeChild(textarea);
+
+          return {
+            success,
+            method: success ? 'execCommand' : 'none'
+          };
+        } catch (error) {
+          return { success: false, method: 'none', error: error as Error };
+        }
+      }
+
+      // Announce message to screen readers
+      function announceToScreenReader(message: string): void {
+        const announcement = document.querySelector('.copy-announcement');
+        if (!announcement) return;
+
+        // Clear previous announcement
+        announcement.textContent = '';
+
+        // Use setTimeout to ensure screen readers detect the change
+        setTimeout(() => {
+          announcement.textContent = message;
+        }, 100);
+      }
+
+      // Handle copy button click
+      function handleCopy(button: HTMLButtonElement, pre: HTMLPreElement): void {
+        const text = extractCodeText(pre);
+
+        copyToClipboard(text).then(result => {
+          if (result.success) {
+            // Show success state
+            button.classList.add('success');
+            button.setAttribute('aria-label', 'Code copied');
+            announceToScreenReader('Code copied to clipboard');
+
+            // Clear existing timer if button clicked again
+            if (resetTimer !== null) {
+              clearTimeout(resetTimer);
+            }
+
+            // Reset after 1000ms
+            resetTimer = window.setTimeout(() => {
+              // Check if button still exists in DOM
+              if (document.contains(button)) {
+                button.classList.remove('success');
+                button.setAttribute('aria-label', 'Copy code to clipboard');
+              }
+              resetTimer = null;
+            }, 1000);
+          } else {
+            // Show error state (no visual change, but announce)
+            announceToScreenReader('Failed to copy code');
+          }
+        });
+      }
+
+      // Handle keyboard events
+      function handleKeydown(event: KeyboardEvent, button: HTMLButtonElement, pre: HTMLPreElement): void {
+        // Enter or Space key activates button
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault(); // Prevent space from scrolling
+          handleCopy(button, pre);
+        }
+      }
+
+      // Initialize copy buttons
+      function initCopyButtons(): void {
+        // Check for clipboard support
+        if (!hasClipboardSupport()) {
+          console.warn('Clipboard API not supported, copy buttons will not be initialized');
+          return;
+        }
+
+        // Find all code block containers
+        const codeBlocks = document.querySelectorAll('.code-block-container');
+
+        codeBlocks.forEach(container => {
+          const button = container.querySelector('.copy-button') as HTMLButtonElement | null;
+          const pre = container.querySelector('pre') as HTMLPreElement | null;
+
+          // Guard against missing elements
+          if (!button || !pre) {
+            console.warn('Code block missing required elements');
+            return;
+          }
+
+          // Attach event listeners
+          button.addEventListener('click', () => handleCopy(button, pre));
+          button.addEventListener('keydown', (e) => handleKeydown(e, button, pre));
+        });
+      }
+
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', () => {
+        if (resetTimer !== null) {
+          clearTimeout(resetTimer);
+        }
+      });
+
+      // Initialize on DOM ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCopyButtons);
+      } else {
+        initCopyButtons();
+      }
+    </script>
   </body>
 
   <style is:global>
+    /* Copy button styles */
+    .code-block-container {
+      position: relative;
+      margin: 1.5rem 0;
+    }
+
+    .code-block-container pre {
+      margin: 0;
+      padding: 1rem;
+      overflow-x: auto;
+      border-radius: 0.5rem;
+    }
+
+    /* Copy button positioning and layout */
+    .copy-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0.5rem;
+      z-index: 10;
+      border: none;
+      cursor: pointer;
+      border-radius: 0.25rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Theme-aware button styling - Light theme */
+    html[data-theme="light"] .copy-button {
+      background-color: rgba(243, 244, 246, 0.8);
+      color: rgb(55, 65, 81);
+      backdrop-filter: blur(4px);
+    }
+
+    html[data-theme="light"] .copy-button:hover {
+      background-color: rgba(229, 231, 235, 0.9);
+    }
+
+    /* Theme-aware button styling - Dark theme */
+    html[data-theme="dark"] .copy-button {
+      background-color: rgba(31, 41, 55, 0.8);
+      color: rgb(209, 213, 219);
+      backdrop-filter: blur(4px);
+    }
+
+    html[data-theme="dark"] .copy-button:hover {
+      background-color: rgba(55, 65, 81, 0.9);
+    }
+
+    /* Focus indicator */
+    .copy-button:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    /* Icon container for positioning */
+    .copy-icon-container {
+      position: relative;
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Icon visibility management */
+    .copy-icon,
+    .check-icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    /* Default state: show copy icon */
+    .copy-icon {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .check-icon {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    /* Success state: show check icon */
+    .copy-button.success .copy-icon {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    .copy-button.success .check-icon {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Respect prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      .copy-button,
+      .copy-icon,
+      .check-icon {
+        transition: none;
+      }
+    }
+
+    /* Screen reader only class */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* Restore proper backgrounds based on theme */
+    html[data-theme="light"] .code-block-container {
+      background-color: #f6f8fa;
+      border-radius: 0.5rem;
+    }
+
+    html[data-theme="dark"] .code-block-container {
+      background-color: #0d1117;
+      border-radius: 0.5rem;
+    }
+
+    /* CRITICAL: Override Tailwind prose plugin's code color rules */
+    /* The global.css sets: html[data-theme="light"] .prose pre code { color: var(--tw-prose-code); } */
+    /* This kills syntax highlighting by making all code one color */
+    /* We need to override this for .code-block-container specifically */
+    
+    /* First, prevent the parent code element from forcing a single color */
+    html[data-theme="light"] .prose .code-block-container pre.astro-code code {
+      color: initial !important;
+    }
+    
+    html[data-theme="dark"] .prose .code-block-container pre.astro-code code {
+      color: initial !important;
+    }
+    
+    /* Now handle the span elements with inline styles from Shiki */
+    /* Dark theme: use the --shiki-dark CSS variable */
+    html[data-theme="dark"] .prose .code-block-container pre.astro-code span[style*="color"] {
+      color: var(--shiki-dark) !important;
+    }
+
+    /* Light theme: The inline style has the light color as the first value */
+    /* We use initial to reset, then the inline style will apply */
+    html[data-theme="light"] .prose .code-block-container pre.astro-code span[style*="color"] {
+      /* Don't override - let the inline style work */
+    }
+
+    /* Ensure pre element has correct background colors */
+    html[data-theme="dark"] .prose .code-block-container pre.astro-code {
+      background-color: var(--shiki-dark-bg, #24292e) !important;
+    }
+
+    html[data-theme="light"] .prose .code-block-container pre.astro-code {
+      background-color: #f6f8fa !important;
+    }
+
     /* Attribute-based theme selectors - override media queries for manual theme control */
     html[data-theme="dark"],
     html[data-theme="dark"] body {

@@ -16,7 +16,8 @@
     "@fontsource-variable/jetbrains-mono": "^5.2.6",
     "@tailwindcss/vite": "^4.1.12",
     "astro": "^5.13.2",
-    "tailwindcss": "^4.1.12"
+    "tailwindcss": "^4.1.12",
+    "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
