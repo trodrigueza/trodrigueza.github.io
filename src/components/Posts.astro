@@ -6,7 +6,7 @@ const posts = Object.values(modules).map((m) => ({
   url: m.url,
   file: m.file,
   headings: m.getHeadings?.(),
-}));
+})).filter((a) => !a.frontmatter?.draft);
 
 posts.sort(
   (a, b) => new Date(b.frontmatter.pubDate) - new Date(a.frontmatter.pubDate),
