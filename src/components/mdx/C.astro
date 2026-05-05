@@ -21,6 +21,32 @@ const colorClass = map[variant] ?? variant; // still allows passing a custom cla
     color: #6b7280;
   }
 
+  :global(html[data-theme="light"]) .c-blue {
+    color: #2563eb;
+  }
+  :global(html[data-theme="light"]) .c-red {
+    color: #dc2626;
+  }
+  :global(html[data-theme="light"]) .c-green {
+    color: #16a34a;
+  }
+  :global(html[data-theme="light"]) .c-gray {
+    color: #6b7280;
+  }
+
+  :global(html[data-theme="dark"]) .c-blue {
+    color: cyan;
+  }
+  :global(html[data-theme="dark"]) .c-red {
+    color: orangered;
+  }
+  :global(html[data-theme="dark"]) .c-green {
+    color: springgreen;
+  }
+  :global(html[data-theme="dark"]) .c-gray {
+    color: darkgray;
+  }
+
   @media (prefers-color-scheme: dark) {
     .c-blue {
       color: cyan;

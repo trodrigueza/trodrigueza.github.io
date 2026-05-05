@@ -19,6 +19,16 @@ const { href, ...rest } = Astro.props;
     text-decoration: none;
   }
 
+  :global(html[data-theme="light"]) .blog-link,
+  :global(html[data-theme="light"]) .blog-link:visited {
+    color: tomato;
+  }
+
+  :global(html[data-theme="dark"]) .blog-link,
+  :global(html[data-theme="dark"]) .blog-link:visited {
+    color: greenyellow;
+  }
+
   @media (prefers-color-scheme: light) {
     .blog-link,
     .blog-link:visited {
