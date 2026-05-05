@@ -1,8 +1,16 @@
 ---
 // src/components/mdx/C.astro
-const { variant = "blue", class: cls = "" } = Astro.props;
+const { variant, red, green, gray, blue, class: cls = "" } = Astro.props;
+
+// Determine color from boolean props or variant prop
+let color = variant || "blue"; // default to blue
+if (red) color = "red";
+if (green) color = "green";
+if (gray) color = "gray";
+if (blue) color = "blue";
+
 const map = { blue: "c-blue", red: "c-red", green: "c-green", gray: "c-gray" };
-const colorClass = map[variant] ?? variant; // still allows passing a custom class name
+const colorClass = map[color as keyof typeof map] ?? color; // still allows passing a custom class name
 ---
 
 <span class={`${colorClass} ${cls}`.trim()}><slot /></span>
