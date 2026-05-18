@@ -1,15 +1,12 @@
 {
-  "name": "",
+  "name": "trodrigueza-site",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
-    "test:debug": "playwright test --debug"
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.4",
@@ -20,7 +17,7 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.59.1",
+    "@tailwindcss/typography": "^0.5.19",
     "katex": "^0.16.22",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0"

@@ -1,0 +1,127 @@
+.code-block-container {
+  position: relative;
+  margin: 1.5rem 0;
+}
+
+.code-block-container pre {
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+}
+
+html[data-theme="light"] .code-block-container {
+  background-color: #f6f8fa;
+  border-radius: 0.5rem;
+}
+
+html[data-theme="dark"] .code-block-container {
+  background-color: #0d1117;
+  border-radius: 0.5rem;
+}
+
+:where(html[data-theme="dark"]) .code-block-container pre.astro-code,
+:where(html[data-theme="dark"]) .code-block-container pre.astro-code span {
+  color: var(--shiki-dark);
+}
+
+:where(html[data-theme="dark"]) .code-block-container pre.astro-code {
+  background-color: var(--shiki-dark-bg);
+}
+
+.copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html[data-theme="light"] .copy-button {
+  background-color: rgba(243, 244, 246, 0.8);
+  color: rgb(55, 65, 81);
+  backdrop-filter: blur(4px);
+}
+
+html[data-theme="light"] .copy-button:hover {
+  background-color: rgba(229, 231, 235, 0.9);
+}
+
+html[data-theme="dark"] .copy-button {
+  background-color: rgba(31, 41, 55, 0.8);
+  color: rgb(209, 213, 219);
+  backdrop-filter: blur(4px);
+}
+
+html[data-theme="dark"] .copy-button:hover {
+  background-color: rgba(55, 65, 81, 0.9);
+}
+
+.copy-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.copy-icon-container {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.copy-icon,
+.check-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.copy-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.check-icon {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.copy-button.success .copy-icon {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.copy-button.success .check-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy-button,
+  .copy-icon,
+  .check-icon {
+    transition: none;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
