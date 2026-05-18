@@ -1,0 +1,91 @@
+---
+title: 'Two Invariants Binary Search'
+image:
+    url: "/posts/two-invariants-binary-search/bs2i.webp"
+    alt: "Example"
+pubDate: 2026-04-30
+tags: ["algorithms", "cp"]
+layout: "../../layouts/PostLayout.astro"
+draft: false
+---
+import C from '../../components/mdx/C.astro';
+import Link from '../../components/mdx/Link.astro';
+
+<article style="margin: 20px auto 0; max-width:850px; padding: 5px; line-height: 2.3; font-size: 18px; ">
+<div style="justify-content: center; text-align: center;">
+  <h1 class="post-title">{frontmatter.title}</h1>
+  <p class="post-date">{new Date(frontmatter.pubDate).toDateString()}</p>
+  <img style="width: 100%; height: auto; border-radius: 5px;" src={frontmatter.image.url} alt={frontmatter.image.alt} />
+</div> 
+
+When I started doing **<C red>competitive programming,</C>** naturally, 
+one of the first algorithms that I learned was **<C green>binary search.</C>** 
+I think this is one of the simplest and most beautiful algorithms because
+of its wide applicability. For a long time, I struggled with implementing it; I 
+used to get confused on how to update left and right **<C>boundaries,</C>** what 
+**<C>stop condition</C>** to set, etc. Nowadays, I still see people –sometimes 
+experienced ones– having issue with it, such as getting stuck in **<C>infinite loops.</C>**
+I stopped having these kinds of issues when I learned the **<C green>two invariants method.</C>**
+
+Suppose we want to find a **<C blue>target number</C>** $x$ in a **<C blue>sorted array</C>** `A` of $n$ elements. Initially, the **<C blue>left boundary</C>** of our search will be index `0` of the array (`l = 0`) and the **<C blue>right boundary</C>** will be 
+index `n-1` of the array (`r = n-1`) –assumming $0$-indexing-. To use this method we want to 
+transform `A` into an **<C blue>imaginary boolean array</C>** `B`, which will look something like `[false, false, false, true, true]`.
+For this, we need a **<C green>monotonic function</C>** $f(m)$ evaluated over the values of `A`. Let's think of $f$ as 
+a **<C blue>predicate</C>** that divides our search space (in this case `A`) in two continous halves (`B`).
+
+We will establish and maintain these **<C green>two invariants</C>** $f(l) = false$ and $f(r) = true$, always. For 
+this to be true at the start of the search, we will expand our search space interval from $[0, n - 1]$
+to $[-1, n]$, adding **<C green>imaginary boundaries</C>**. By setting `l = -1` and `r = n`, we theoretically assume that before index `0` 
+the condition is always `false`, and that after index `n - 1` the condition is always true. Note that this **<C green>keeps our invariants intact</C>** even if `A` contains values that make `B` look something like `[true, true, true, true]` or `[false, false, false, false]`. 
+Inside our loop, we evaluate `m = (l + r) / 2`. If $f(m)$ returns true, we set `r = m`; otherwise, we set `l = m`. Note that we are **<C green>always reducing the search space</C>**. Eventually we will reach a state like this:
+
+```cpp
+[false, false, false, true, true, true];
+/*                ^     ^
+                  |     |
+                  l     r             */
+```
+
+What will be our **<C red>stop condition</C>**? Let's first ask ourselves what the **<C blue>unsearched space</C>** is in terms of 
+`l` and `r`. Since `l` and `r` act as our **<C blue>already evaluated boundaries</C>**, the unknown elements lie strictly 
+between them, forming the **<C blue>open interval</C>** $(l, r)$. As long as there is at least one element left to 
+evaluate, the distance between `r` and `l` will be **<C green>strictly greater than 1</C>** ($r - l > 1$). Therefore,
+ our search space is **<C red>completely exhausted</C>** exactly when `l` and `r` become **<C red>adjacent</C>**, which mathematically 
+ translates to $r - l <= 1$. At this point, the **<C green>invariants hold</C>**, and they form the exact cutoff boundary 
+ shown in the previous example.
+
+Furthermore, given that the loop only runs while $r - l \geq 2$, it is guaranteed that $l < m < r$. This means that `m` will **<C green>never equal</C>** `l` or `r`,
+reinforcing the fact that in each iteration the interval is **<C green>strictly reduced</C>**. This eliminates the possibility of getting trapped in 
+an **<C red>infinite loop</C>**. When the loop terminates, `l` will be the **<C blue>last index where</C>** $f(m)$ was `false` and `r` will be the **<C blue>first index where</C>** $f(m)$ was true.
+
+Going back to our initial example, what would be a valid definition of $f$ in order to check if our target $x$ is in `A`?
+Defining $f(m) = (A_m >= x)$ would be enough! Note that this function is **<C blue>monotonic</C>** over `A` because the array is sorted. In this case, the answer would 
+be in `r`, which points to the **<C green>first `true` value</C>** in `B` (the **<C green>first element greater than or equal to</C>** $x$). Note that if $x$ is not in `A`, `r` will **<C red>still be</C>** $n$ at the end. 
+Let's look at the implementation:
+
+```cpp
+int main() {
+  int n, x;
+  cin >> n >> x;
+  vector<int> A(n);
+  for (int i = 0; i < n; i++) cin >> A[i];
+  sort(A.begin(), A.end());
+
+  auto f = [&](int m) {
+    return (A[m] >= x);
+  };
+
+  int l = -1, r = n;
+  while (r - l > 1) {
+    int m = l + (r - l) / 2; // to avoid overflow
+    if (f(m)) r = m;
+    else l = m;
+  }
+
+  cout << (r < n && A[r] == x ? "YES" : "NO") << "\n";
+}
+```
+
+**<C green>Let's solve some problems.</C>**
+
+</article>
