@@ -14,9 +14,6 @@ What I really like: it's very simple to publish posts. Drop a Markdown/MDX file 
 # install
 npm install
 
-# (if you see a typography plugin error, also run:)
-npm i -D @tailwindcss/typography
-
 # dev
 npm run dev
 
@@ -47,7 +44,6 @@ Deployed via GitHub Actions to GitHub Pages (workflow already included).
 │  │     └─ cp-internal-marathon.mdx
 │  └─ styles/global.css
 ├─ astro.config.mjs            # MDX + math (remark/rehype) + Tailwind (Vite)
-├─ tailwind.config.mjs         # includes typography plugin
 └─ .github/workflows/deploy.yml
 ```
 

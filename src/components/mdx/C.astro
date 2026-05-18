@@ -2,71 +2,29 @@
 // src/components/mdx/C.astro
 const { variant, red, green, gray, blue, class: cls = "" } = Astro.props;
 
-// Determine color from boolean props or variant prop
-let color = variant || "blue"; // default to blue
+let color = variant || "blue";
 if (red) color = "red";
 if (green) color = "green";
 if (gray) color = "gray";
 if (blue) color = "blue";
 
 const map = { blue: "c-blue", red: "c-red", green: "c-green", gray: "c-gray" };
-const colorClass = map[color as keyof typeof map] ?? color; // still allows passing a custom class name
+const colorClass = map[color as keyof typeof map] ?? color;
 ---
 
 <span class={`${colorClass} ${cls}`.trim()}><slot /></span>
 
 <style>
   .c-blue {
-    color: #2563eb;
+    color: var(--link);
   }
   .c-red {
-    color: #dc2626;
+    color: var(--resalt2);
   }
   .c-green {
-    color: #16a34a;
+    color: var(--resalt);
   }
   .c-gray {
     color: #6b7280;
-  }
-
-  :global(html[data-theme="light"]) .c-blue {
-    color: #2563eb;
-  }
-  :global(html[data-theme="light"]) .c-red {
-    color: #dc2626;
-  }
-  :global(html[data-theme="light"]) .c-green {
-    color: #16a34a;
-  }
-  :global(html[data-theme="light"]) .c-gray {
-    color: #6b7280;
-  }
-
-  :global(html[data-theme="dark"]) .c-blue {
-    color: cyan;
-  }
-  :global(html[data-theme="dark"]) .c-red {
-    color: orangered;
-  }
-  :global(html[data-theme="dark"]) .c-green {
-    color: springgreen;
-  }
-  :global(html[data-theme="dark"]) .c-gray {
-    color: darkgray;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .c-blue {
-      color: cyan;
-    }
-    .c-red {
-      color: orangered;
-    }
-    .c-green {
-      color: springgreen;
-    }
-    .c-gray {
-      color: darkgray;
-    }
   }
 </style>

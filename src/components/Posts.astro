@@ -60,8 +60,8 @@ const allTags = Array.from(
           </time>
           <img
             class="w-full object-cover rounded-md"
-            src={project.frontmatter.image.url}
-            alt={project.frontmatter.alt}
+            src={project.frontmatter.image?.url}
+            alt={project.frontmatter.image?.alt ?? ""}
           />
 
           {project.frontmatter.description && (
@@ -70,31 +70,20 @@ const allTags = Array.from(
             </p>
           )}
 
-          <ul class="mt-2 flex flex-wrap gap-2 text-[10px]">
-            {"["}
-            {project.frontmatter.tags.map((tag, idx, arr) => (
-              <li style="display: inline;">
-                {/* <span class="px-2 py-0.5 rounded-full text-[11px] bg-[var(--resalt2)] text-white"> */}
-                <span class="py-0.5">
-                  {tag}
-                  {idx < arr.length - 1 ? "," : ""}
-                </span>
-              </li>
-            ))}
-            {"]"}
-          </ul>
-
-          {/* <div class="mt-auto flex items-center gap-2 pt-2">
-          <span class="rounded-full border border-white/10 px-3 py-1 text-xs bg-white/5 group-hover:bg-white/5 transition">Read</span>
-          {project.frontmatter.github && (
-            <span class="text-xs opacity-80">·</span>
+          {(project.frontmatter.tags ?? []).length > 0 && (
+            <ul class="mt-2 flex flex-wrap gap-2 text-[10px]">
+              {"["}
+              {(project.frontmatter.tags ?? []).map((tag, idx, arr) => (
+                <li style="display: inline;">
+                  <span class="py-0.5">
+                    {tag}
+                    {idx < arr.length - 1 ? "," : ""}
+                  </span>
+                </li>
+              ))}
+              {"]"}
+            </ul>
           )}
-          {project.frontmatter.github && (
-            <span class="rounded-full border border-white/10 px-3 py-1 text-xs bg-white/5 group-hover:bg-white/5 transition">
-              Repo
-            </span>
-          )}
-        </div> */}
         </article>
       </a>
     ))

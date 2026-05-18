@@ -9,23 +9,23 @@ import Exp from "../components/Exp.astro";
 import SectionContainer from "../components/SectionContainer.astro";
 import { execSync } from 'child_process';
 
-let lastCommitDate = new Date().toISOString();
+let formattedDate: string;
 try {
-  lastCommitDate = execSync('git log -1 --format=%cI').toString().trim();
+  const lastCommitDate = execSync('git log -1 --format=%cI').toString().trim();
+  formattedDate = new Date(lastCommitDate).toLocaleString('en-US', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Bogota',
+    timeZoneName: 'shortOffset'
+  });
 } catch (e) {
-  console.warn('Could not get git commit date, using current date');
+  console.warn('Could not get git commit date, falling back to static label');
+  formattedDate = 'Recently updated';
 }
-
-const formattedDate = new Date(lastCommitDate).toLocaleString('en-US', {
-  weekday: 'short',
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  timeZone: 'America/Bogota',
-  timeZoneName: 'shortOffset'
-});
 ---
 
 <Layout title="trodrigueza">
@@ -49,7 +49,7 @@ const formattedDate = new Date(lastCommitDate).toLocaleString('en-US', {
           class="text-[var(--resalt)] font-bold">Machine Learning</a
         >, <a class="text-[var(--resalt)] font-bold">LLMs</a> and <a
           class="text-[var(--resalt)] font-bold"
-          >Quantitave/Algorithmic trading</a
+          >Quantitative/Algorithmic trading</a
         >. <br /><br />I love listening to <a
           class="text-[var(--resalt2)] font-bold">salsa</a
         >, practicing <a class="text-[var(--resalt2)] font-bold">cp</a> (competitive
