@@ -1,0 +1,140 @@
+---
+title: 'Arcade Crane'
+image:
+    url: "/posts/arcade-crane/arcade-crane.webp"
+    alt: "Maquina de garra con peluches"
+pubDate: 2026-06-11
+tags: ["cp", "upsolving"]
+layout: "../../layouts/PostLayout.astro"
+draft: false
+---
+import C from '../../components/mdx/C.astro';
+import Link from '../../components/mdx/Link.astro';
+
+<article style="margin: 20px auto 0; max-width:850px; padding: 5px; line-height: 2.3; font-size: 18px; ">
+<div style="justify-content: center; text-align: center;">
+  <h1 class="post-title">{frontmatter.title}</h1>
+  <p class="post-date">{new Date(frontmatter.pubDate).toDateString()}</p>
+  <img style="width: 100%; height: auto; border-radius: 5px;" src={frontmatter.image.url} alt={frontmatter.image.alt} />
+</div>
+
+Acá comienza una serie de blogs upsolveando *algunos* problemas de CP que saldrán de Gyms. El problema es **<C blue>A. Arcade Crane</C>** (<Link href="https://codeforces.com/gym/106353/problem/A">enlace al problema</Link>), un problema constructivo cuya solución mezcla una idea muy natural, parecida a un **<C green>selection sort</C>**, con un **<C green>BFS</C>** pequeñito que se encarga de la parte difícil del final. Esta es una editorial basada en mi solución.
+
+Primero el problema. Tenemos $n$ peluches en una fila ($5 \le n \le 1000$) y cada uno tiene un valor de ternura distinto entre $1$ y $n$. La única operación permitida es agarrar **<C blue>tres peluches consecutivos</C>** con la garra y volverlos a insertar en cualquier parte de la fila, manteniendo el orden entre ellos tres. Una operación se describe con dos números $i$ y $j$: se agarran los peluches de las posiciones $i$, $i+1$ e $i+2$ y se reinsertan de modo que queden en las posiciones $j$, $j+1$ y $j+2$. El objetivo es dejar la fila ordenada de menor a mayor usando **<C red>a lo más $5000$ operaciones</C>** (No hay que minimizar el número de operaciones).
+
+<div style="justify-content: center; text-align: center;">
+  <img style="width: 100%; height: auto; border-radius: 5px;" src="/posts/arcade-crane/operation.svg" alt="Ejemplo de la operacion: se agarra un bloque de tres y se reinserta" />
+</div>
+
+*Así se ve la primera operación de la salida del ejemplo 1: con $i = 2$ y $j = 1$ la fila pasa de 3 5 2 1 4 a 5 2 1 3 4.*
+
+La primera mitad de mi solución coloca los valores en su lugar **<C green>de izquierda a derecha</C>**, igual que un selection sort. Supongamos que el prefijo de la fila ya quedó ordenado y ahora queremos llenar la posición $i$ con el valor que le toca. Primero buscamos en qué posición está ese valor, digamos que está en la posición $id$. Entonces agarramos el bloque de tres que **<C blue>empieza</C>** en $id$ y lo insertamos en $i$. Como el bloque conserva su orden, nuestro valor cae exactamente en la posición $i$. De paso arrastramos a sus dos vecinos de la derecha, pero eso no importa: caen justo después de $i$, siguen en la zona desordenada y los acomodaremos en las siguientes vueltas. El prefijo ordenado nunca se toca porque todo ocurre a su derecha.
+
+Notemos que para agarrar un bloque que empieza en $id$ necesitamos que existan las posiciones $id+1$ e $id+2$, así que un bloque solo puede empezar hasta la posición $n-2$. Si el valor que buscamos está de último o de penúltimo, **<C red>no hay bloque válido que empiece ahí</C>**. Para salir de ese problema podemos hacer siempre la operación con $i = n-2$ y $j = n-3$, o sea agarrar **<C blue>los últimos tres</C>** peluches e insertarlos una posición más a la izquierda. Haciendo esto los últimos cuatro elementos **<C green>rotan</C>**: el que estaba justo antes del bloque pasa al final y los otros tres se corren un puesto hacia la izquierda.
+
+<div style="justify-content: center; text-align: center;">
+  <img style="width: 100%; height: auto; border-radius: 5px;" src="/posts/arcade-crane/rotation.svg" alt="El truco de la rotacion sobre los ultimos cuatro elementos" />
+</div>
+
+*El valor que necesitamos es $c$ y está de penúltimo, donde la garra no puede empezar. Después de la rotación queda en la posición $n-2$ y ya lo podemos agarrar.*
+
+Si el valor estaba de penúltimo, una rotación basta. Si estaba de último, aplicamos la rotación dos veces. Y como la rotación solo toca las últimas cuatro posiciones, es segura mientras esas posiciones sigan en la zona desordenada.
+
+Con esto la primera fase fija los valores $1, 2, \dots, n-3$, es decir, todo menos los **<C blue>últimos tres</C>**. ¿Por qué no seguimos igual hasta el final? Pensemos qué pasa cuando solo quedan tres elementos desordenados al fondo de la fila. El único bloque de tres que vive completamente dentro de esas tres posiciones es exactamente ese trío: si lo reinsertamos en el mismo lugar no cambia nada, y si lo reinsertamos en otro lado rompemos el prefijo ordenado. En otras palabras, para terminar de ordenar toca **<C red>sí o sí desarmar una parte del prefijo</C>** y después arreglarla. 
+
+Ahora la parte cool de la solución. En este punto los últimos tres elementos son una permutación de los tres valores más grandes y sabemos que vamos a tener que dañar el prefijo por un momento. En vez de pensar a mano la secuencia exacta de movimientos para cada caso, podemos hacer un brutazo. Miramos solamente la **<C green>ventana de los últimos cinco</C>** elementos. Dentro de esa ventana un bloque puede empezar en tres posiciones distintas ($n-4$, $n-3$ y $n-2$) y puede insertarse en esas mismas tres, y como repetir la misma posición no cambia nada, quedan **<C blue>seis operaciones</C>** posibles que nunca se salen de la ventana.
+
+El estado es simplemente el contenido de la ventana. Como son cinco valores, hay a lo más $5! = 120$ estados, así que un **<C green>BFS</C>** encuentra la secuencia más corta de operaciones que lleva del estado actual al ordenado.
+
+Contemos operaciones para asegurarnos de no pasarnos. En la primera fase cada posición cuesta a lo más tres operaciones: máximo dos rotaciones y la movida final. Como se fijan $n-3$ posiciones, son a lo más $3(n-3)$ operaciones, que para $n = 1000$ da $2991$. La segunda fase agrega el camino del BFS, que vive en un grafo de a lo más $120$ nodos, o sea poquitas operaciones más. **<C green>Debajo del límite de $5000$</C>**.
+
+Sobre la implementación, simulo la operación tal cual con erase e insert sobre un vector: saco los tres elementos y los inserto en la nueva posición. Cada operación cuesta $O(n)$ y hacemos $O(n)$ operaciones, así que todo corre en $O(n^2)$, ok para $n \le 1000$. En el código las posiciones van de $0$ a $n-1$ y solo al imprimir les sumo uno. Este es el código completo:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int32_t main() {
+    int n; cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    vector<array<int, 2>> ans;
+
+    // agarra v[i..i+2] y lo inserta en j
+    auto change = [&](vector<int> &v, int i, int j) {
+        int x = v[i], y = v[i + 1], z = v[i + 2];
+        v.erase(v.begin() + i);
+        v.erase(v.begin() + i);
+        v.erase(v.begin() + i);
+        v.insert(v.begin() + j, z);
+        v.insert(v.begin() + j, y);
+        v.insert(v.begin() + j, x);
+    };
+
+    // fase 1: fijar los valores 1..n-3
+    for (int i = 0; i + 3 < n; i++) {
+        if (a[i] == i + 1) continue;
+        int id = -1;
+        for (int j = i; j < n && id == -1; j++) {
+            if (a[j] == i + 1) id = j;
+        }
+
+        if (id == n - 2) { // una rotacion
+            ans.push_back({n-3, n-4});
+            change(a, n-3, n-4);
+            id = n - 3;
+        }
+        if (id == n - 1) { // dos rotaciones
+            ans.push_back({n-3, n-4});
+            ans.push_back({n-3, n-4});
+            change(a, n-3, n-4);
+            change(a, n-3, n-4);
+            id = n - 3;
+        }
+
+        ans.push_back({id, i});
+        change(a, id, i);
+    }
+
+    // fase 2: BFS sobre la ventana de los ultimos cinco
+    vector<int> v = {a[n-5], a[n-4], a[n-3], a[n-2], a[n-1]};
+
+    queue<pair<vector<int>, string>> q;
+    map<vector<int>, int> vis;
+    vis[v] = 1;
+    q.push({v, ""});
+    vector<array<int, 2>> ch = {{n-5, n-4}, {n-5, n-3}, {n-4, n-5},
+                                {n-4, n-3}, {n-3, n-4}, {n-3, n-5}};
+    while (q.size()) {
+        auto cur = q.front().first;
+        auto bac = q.front().second;
+        q.pop();
+
+        if (cur[0] == n-4 && cur[1] == n-3 && cur[2] == n-2 && cur[3] == n-1 && cur[4] == n) {
+            for (char c : bac) {
+                int id = c - '0';
+                ans.push_back({ch[id][0], ch[id][1]});
+            }
+            break;
+        }
+
+        for (int i = 0; i < 6; i++) {
+            auto tmp = cur;
+            auto tmpb = bac; tmpb += to_string(i);
+            change(tmp, ch[i][0] - (n-5), ch[i][1] - (n-5));
+            if (vis.count(tmp)) continue;
+            vis[tmp] = 1;
+            q.push({tmp, tmpb});
+        }
+    }
+
+    cout << ans.size() << "\n";
+    for (int i = 0; i < ans.size(); i++) {
+        cout << ans[i][0] + 1 << " " << ans[i][1] + 1 << "\n";
+    }
+}
+```
+
+
+</article>

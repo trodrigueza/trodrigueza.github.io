@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" font-family="ui-sans-serif, system-ui, sans-serif">
+  <rect x="0" y="0" width="720" height="360" rx="10" fill="#ffffff"/>
+
+  <!-- position labels -->
+  <g fill="#9ca3af" font-size="15" text-anchor="middle">
+    <text x="284" y="52">n-3</text>
+    <text x="360" y="52">n-2</text>
+    <text x="436" y="52">n-1</text>
+    <text x="512" y="52">n</text>
+  </g>
+
+  <text x="80" y="101" fill="#6b7280" font-size="17" font-style="italic" text-anchor="middle">antes</text>
+  <text x="80" y="267" fill="#6b7280" font-size="17" font-style="italic" text-anchor="middle">después</text>
+
+  <!-- before row: ... a [b c d], c is the target -->
+  <g stroke-width="2">
+    <rect x="176" y="64" width="64" height="64" rx="9" fill="#fafafa" stroke="#d4d4d8" stroke-dasharray="5 5"/>
+    <rect x="252" y="64" width="64" height="64" rx="9" fill="#fef3c7" stroke="#f59e0b"/>
+    <rect x="328" y="64" width="64" height="64" rx="9" fill="#e6f4ea" stroke="#34a853"/>
+    <rect x="404" y="64" width="64" height="64" rx="9" fill="#e6f4ea" stroke="#34a853"/>
+    <rect x="480" y="64" width="64" height="64" rx="9" fill="#e6f4ea" stroke="#34a853"/>
+  </g>
+  <g font-size="28" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">
+    <text x="208" y="106" fill="#9ca3af">&#8230;</text>
+    <text x="284" y="106" fill="#18181b">a</text>
+    <text x="360" y="106" fill="#18181b">b</text>
+    <text x="436" y="106" fill="#dc2626" font-weight="bold">c</text>
+    <text x="512" y="106" fill="#18181b">d</text>
+  </g>
+
+  <text x="360" y="158" fill="#374151" font-size="16" text-anchor="middle">se agarran los últimos tres y se insertan una posición a la izquierda</text>
+
+  <!-- arrow -->
+  <rect x="357" y="168" width="6" height="34" rx="3" fill="#9ca3af"/>
+  <polygon points="349,202 371,202 360,216" fill="#9ca3af"/>
+
+  <!-- after row: ... [b c d] a -->
+  <g stroke-width="2">
+    <rect x="176" y="230" width="64" height="64" rx="9" fill="#fafafa" stroke="#d4d4d8" stroke-dasharray="5 5"/>
+    <rect x="252" y="230" width="64" height="64" rx="9" fill="#e6f4ea" stroke="#34a853"/>
+    <rect x="328" y="230" width="64" height="64" rx="9" fill="#e6f4ea" stroke="#34a853"/>
+    <rect x="404" y="230" width="64" height="64" rx="9" fill="#e6f4ea" stroke="#34a853"/>
+    <rect x="480" y="230" width="64" height="64" rx="9" fill="#fef3c7" stroke="#f59e0b"/>
+  </g>
+  <g font-size="28" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">
+    <text x="208" y="272" fill="#9ca3af">&#8230;</text>
+    <text x="284" y="272" fill="#18181b">b</text>
+    <text x="360" y="272" fill="#dc2626" font-weight="bold">c</text>
+    <text x="436" y="272" fill="#18181b">d</text>
+    <text x="512" y="272" fill="#18181b">a</text>
+  </g>
+
+  <text x="360" y="330" fill="#374151" font-size="16" text-anchor="middle">los últimos cuatro rotan: a pasa al final y c ya se puede agarrar</text>
+</svg>
