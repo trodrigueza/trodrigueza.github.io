@@ -2,12 +2,43 @@
 import Layout from "../layouts/Layout.astro";
 import SectionContainer from "../components/SectionContainer.astro";
 import Posts from "../components/Posts.astro";
+import { execSync } from "child_process";
+
+let formattedDate: string;
+try {
+    const lastCommitDate = execSync("git log -1 --format=%cI")
+        .toString()
+        .trim();
+    formattedDate = new Date(lastCommitDate).toLocaleString("en-US", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "America/Bogota",
+        timeZoneName: "shortOffset",
+    });
+} catch (e) {
+    console.warn("Could not get git commit date, falling back to static label");
+    formattedDate = "Recently updated";
+}
 ---
 
 <Layout title="blog">
-  <main class="px-6">
-    <SectionContainer class="flex flex-col items-center justify-center gap-y-12">
-      <Posts />
-    </SectionContainer>
-  </main>
+    <main class="px-6">
+        <SectionContainer
+            class="flex flex-col items-center justify-center gap-y-12"
+        >
+            <Posts />
+        </SectionContainer>
+
+        <SectionContainer>
+            <p
+                class="text-cyan flex text-center text-xs md:text-2xs dark:text-cyan-1000"
+            >
+                Last update: {formattedDate}
+            </p>
+        </SectionContainer>
+    </main>
 </Layout>
