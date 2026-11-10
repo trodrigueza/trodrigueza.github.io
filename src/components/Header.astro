@@ -1,26 +1,33 @@
 ---
-import ThemeToggle from './ThemeToggle.astro';
+import ThemeToggle from "./ThemeToggle.astro";
 const p = Astro.url.pathname;
 ---
 
 <header
-  class="mx-auto max-w-[1120px] w-full flex justify-center items-center py-10 md:py-16 text-2xl"
+    class="mx-auto max-w-[1120px] w-full flex justify-center items-center py-10 md:py-16 text-2xl"
 >
-  <nav class="flex flex-row gap-x-10 opacity-90 items-center">
-    <a
-      href="/"
-      aria-current={p === "/" ? "page" : undefined}
-      class="transition opacity-70 hover:opacity-100 aria-[current=page]:opacity-100 aria-[current=page]:font-semibold"
-      >Home</a
-    >
+    <nav class="flex flex-row gap-x-10 opacity-90 items-center">
+        <a
+            href="/"
+            aria-current={p === "/" ? "page" : undefined}
+            class="transition opacity-70 hover:opacity-100 aria-[current=page]:opacity-100 aria-[current=page]:font-semibold"
+            >Home</a
+        >
 
-    <a
-      href="/blog/"
-      aria-current={p.startsWith("/blog") ? "page" : undefined}
-      class="transition opacity-70 hover:opacity-100 aria-[current=page]:opacity-100 aria-[current=page]:font-semibold"
-      >Blog</a
-    >
-    
-    <ThemeToggle />
-  </nav>
+        <a
+            href="/experience/"
+            aria-current={p.startsWith("/experience") ? "page" : undefined}
+            class="transition opacity-70 hover:opacity-100 aria-[current=page]:opacity-100 aria-[current=page]:font-semibold"
+            >Experience</a
+        >
+
+        <a
+            href="/blog/"
+            aria-current={p.startsWith("/blog") ? "page" : undefined}
+            class="transition opacity-70 hover:opacity-100 aria-[current=page]:opacity-100 aria-[current=page]:font-semibold"
+            >Blog</a
+        >
+
+        <ThemeToggle />
+    </nav>
 </header>

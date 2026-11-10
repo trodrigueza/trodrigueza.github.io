@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Icon from "../components/Icon.astro";
+import Exp from "../components/Exp.astro";
+import SectionContainer from "../components/SectionContainer.astro";
+import CalendarIcon from "../components/icons/Calendar.astro";
+import { execSync } from "child_process";
+---
+
+<Layout title="trodrigueza">
+    <main class="px-6">
+        <SectionContainer
+            class="flex flex-col items-center justify-center gap-y-12"
+        >
+            <SectionContainer>
+                <h2
+                    class="text-2xl font-semibold mb-6 flex gap-x-2 items-center"
+                >
+                    <CalendarIcon class="w-7 h-7 mr-2" />
+                    Some things I've worked on
+                </h2>
+                <p>(I intend to write posts for some of these...)</p>
+                <Exp />
+            </SectionContainer>
+        </SectionContainer>
+    </main></Layout
+>
